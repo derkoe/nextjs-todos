@@ -1,21 +1,43 @@
-"use client";
-
 import { TodoItem } from "@/components/TodoItem";
-import { Todo } from "@/model/todo";
+import { mockTodoService as todoService } from "@/model/todo-service-mock";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
-import { useState } from "react";
 
-export default function Home() {
-  const todos: Todo[] = [];
-  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const filter: "all" | "active" | "completed" =
+    (searchParams?.f as any) || "all";
+  const todos = await todoService.loadTodos(filter);
   const itemsLeft = 0;
+
+  async function addTodo(formData: FormData) {
+    "use server";
+    await todoService.addTodo(formData.get("title") as string);
+    revalidatePath("/");
+  }
+
+  async function toggleAll() {
+    "use server";
+    await todoService.toggleAllTodos();
+    revalidatePath("/");
+  }
+
+  async function clearCompletedTodos() {
+    "use server";
+    await todoService.clearCompletedTodos();
+    revalidatePath("/");
+  }
+
   return (
     <>
       <main>
         <section className="todoapp">
           <header className="header">
             <h1>todos</h1>
-            <form action="addTodoAction">
+            <form action={addTodo}>
               <input
                 className="new-todo"
                 name="title"
@@ -25,7 +47,7 @@ export default function Home() {
             </form>
           </header>
           <section className="main">
-            <form action="toggleAll">
+            <form action={toggleAll}>
               <button
                 type="submit"
                 id="toggle-all"
@@ -71,7 +93,7 @@ export default function Home() {
               </li>
             </ul>
             {todos.some((t) => t.completed) && (
-              <form action="clearCompletedTodos">
+              <form action={clearCompletedTodos}>
                 <button className="clear-completed" type="submit">
                   Clear completed
                 </button>

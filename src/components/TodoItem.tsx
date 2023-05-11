@@ -1,3 +1,5 @@
+"use client";
+
 import { Todo } from "@/model/todo";
 import { KeyboardEventHandler, useState } from "react";
 
