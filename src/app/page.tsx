@@ -1,95 +1,94 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import { TodoItem } from "@/components/TodoItem";
+import { Todo } from "@/model/todo";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const todos: Todo[] = [];
+  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const itemsLeft = 0;
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
+    <>
+      <main>
+        <section className="todoapp">
+          <header className="header">
+            <h1>todos</h1>
+            <form action="addTodoAction">
+              <input
+                className="new-todo"
+                name="title"
+                placeholder="What needs to be done?"
+                autoFocus
+              />
+            </form>
+          </header>
+          <section className="main">
+            <form action="toggleAll">
+              <button
+                type="submit"
+                id="toggle-all"
+                className="toggle-all"
+              ></button>
+              <label htmlFor="toggle-all">Mark all as complete</label>
+            </form>
+            <ul className="todo-list" id="todo-list">
+              {todos.map((todo) => (
+                <TodoItem key={todo.id} todo={todo}></TodoItem>
+              ))}
+            </ul>
+          </section>
+        </section>
+        {todos && (
+          <footer className="footer">
+            <span className="todo-count">
+              <strong>{itemsLeft}</strong>{" "}
+              {" item" + (itemsLeft > 1 || itemsLeft === 0 ? "s " : " ")}
+              left
+            </span>
+            <ul className="filters">
+              <li>
+                <Link className={filter === "all" ? "selected" : ""} href="/">
+                  All
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className={filter === "active" ? "selected" : ""}
+                  href="/?f=active"
+                >
+                  Active
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className={filter === "completed" ? "selected" : ""}
+                  href="/?f=completed"
+                >
+                  Completed
+                </Link>
+              </li>
+            </ul>
+            {todos.some((t) => t.completed) && (
+              <form action="clearCompletedTodos">
+                <button className="clear-completed" type="submit">
+                  Clear completed
+                </button>
+              </form>
+            )}
+          </footer>
+        )}
+      </main>
+      <footer className="info">
+        <p>Double-click to edit a todo</p>
         <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
+          Template by <a href="http://sindresorhus.com">Sindre Sorhus</a>
         </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+        <p>
+          Created by <a href="https://derkoe.dev">derkoe</a>
+        </p>
+      </footer>
+    </>
+  );
 }
